@@ -10,5 +10,6 @@ django_otp==1.1.4
 cryptography
 pyjwt
 django_apscheduler
+gunicorn
 requests
 google-auth
