@@ -20,3 +20,7 @@ AWS_SECRET_ACCESS_KEY = 'K005xs4Fi0ZUB+YkR0UAH60tTHmoGbI'
 
  ssh -i "DSX.pem" ubuntu@ec2-54-158-101-141.compute-1.amazonaws.com
 
+Qc8u06iAVOeUhsYy
+
+
+user=postgres.lyqehikemljqwkxvvekn password=[YOUR-PASSWORD] host=aws-0-ap-southeast-1.pooler.supabase.com port=5432 dbname=postgres
