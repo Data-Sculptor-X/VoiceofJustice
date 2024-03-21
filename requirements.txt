@@ -13,3 +13,4 @@ django_apscheduler
 gunicorn
 requests
 google-auth
+genai
