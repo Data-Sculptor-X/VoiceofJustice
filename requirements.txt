@@ -14,3 +14,5 @@ gunicorn
 requests
 google-auth
 genai
+google-generativeai
+pillow
