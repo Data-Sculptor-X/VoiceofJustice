@@ -4,8 +4,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from django.urls import path
-from core import views
+from .views import *
 
 urlpatterns = [
-    path('generate/', views.generate_text, name='generate_text'),
+    path('generate/', GenerateText.as_view(), name='generate_text'),
+    path('getSection/', GetSection.as_view(), name='getSection'),
+    path('getChat/', GetChat.as_view(), name='getChat'),
 ]
