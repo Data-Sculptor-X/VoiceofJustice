@@ -41,18 +41,16 @@ class GenerateText(APIView):
         response = model.generate_content(prompt)  # Assuming `model` is defined elsewhere
 
         if response and response.text:
-            sectionID = request.data.get('SectionId', '')
+            sectionID = request.data.get('SectionID', '')
             if sectionID:
-                section = SectionHistory.objects.filter(sectionID=sectionID).first()  
-                if section:
+                    section = SectionHistory.objects.get(SectionID=sectionID)
                     ChatHistory.objects.create(
-                        sectionID=section,
+                        SectionID=section,
                         ChatQuestion=prompt,
                         ChatResponse=response.text
                     )
                     return Response({'generated_text': response.text})
-                else:
-                    return Response({'error': 'Section not found.'}, status=400)
+            
             else:
 
                 jwt_object = JWTAuthentication() 
