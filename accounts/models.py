@@ -16,6 +16,8 @@ class UserProfile(models.Model):
 	voj_user = models.BooleanField(default=False)
 	mobile_verified = models.BooleanField(default=False)
 	email_verified = models.BooleanField(default=False)
+	otp=models.IntegerField( null=True,blank=True)
+	exp_date=models.DateTimeField(null=True,blank=True)
 	
 
 	
@@ -25,3 +27,7 @@ class UserTrack(models.Model):
 	logout = models.DateTimeField(null=True, blank=True) 
 	count = models.CharField(max_length=255,null=True, blank=True) 
 	user_details = models.JSONField( null=True, blank=True) 
+
+class EmailTemplate(models.Model):
+	name = models.CharField( max_length = 150,null=True, blank=True) 
+	html = models.TextField(null=True, blank=True)
