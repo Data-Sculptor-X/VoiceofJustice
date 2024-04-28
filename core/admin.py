@@ -9,3 +9,6 @@ admin.site.register(SectionHistory,SectionHistoryClass)
 class ChatHistoryClass(admin.ModelAdmin):
 	list_display = ('id','SectionID','ChatQuestion','TimeStamp')
 admin.site.register(ChatHistory,ChatHistoryClass)
+admin.site.register(Lawyer)
+admin.site.register(News)
+admin.site.register(Law)

@@ -16,3 +16,20 @@ class ChatHistory(models.Model):
 	ChatResponse = models.TextField( null=True,blank=True)  
 	TimeStamp =  models.DateTimeField(auto_now_add=True)  
 	
+
+
+class Lawyer(models.Model):
+	name = models.CharField(max_length=255, null=True,blank=True)  
+	court = models.CharField(max_length=255, null=True,blank=True)  
+	Specialist = models.CharField(max_length=255, null=True,blank=True)  
+	data =  models.JSONField( null=True,blank=True)  
+
+class News(models.Model):
+	date = models.DateField(null=True,blank=True)  
+	data =  models.JSONField( null=True,blank=True)  
+
+class Law(models.Model):
+	act = models.CharField(max_length=255, null=True,blank=True)  
+	actName = models.CharField(max_length=255, null=True,blank=True)  
+	description = models.TextField(null=True,blank=True)  
+	data =  models.JSONField( null=True,blank=True)  

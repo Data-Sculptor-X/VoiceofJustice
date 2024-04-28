@@ -49,7 +49,7 @@ class GenerateText(APIView):
                         ChatQuestion=prompt,
                         ChatResponse=response.text
                     )
-                    return Response({'generated_text': response.text})
+                    return Response({'generated_text': response.text,"SectionID":sectionID})
             
             else:
 
@@ -65,9 +65,9 @@ class GenerateText(APIView):
                 userTrackData = UserTrack.objects.get(id=data["tk"])
 
 
-
+                sect=generate_random_string(userTrackData.username,10)
                 section = SectionHistory.objects.create(
-                                                    SectionID=generate_random_string(userTrackData.username,10),
+                                                    SectionID=sect,
                                                     username=userTrackData.username,
                                                     SectionName=trim_sentence(prompt)
                                                         )
@@ -77,7 +77,7 @@ class GenerateText(APIView):
                         ChatQuestion=prompt,
                         ChatResponse=response.text
                     )
-                    return Response({'generated_text': response.text})
+                    return Response({'generated_text': response.text,"SectionID":sect})
                 else:
                     return Response({'error': 'Section not found.'}, status=400)
 
