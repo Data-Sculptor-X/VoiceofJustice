@@ -138,6 +138,9 @@ from bs4 import BeautifulSoup
 import requests
 import json
 
+
+
+
 def scrape_lawyers(url):
     lawyers = []
     response = requests.get(url)
@@ -148,36 +151,63 @@ def scrape_lawyers(url):
         lawyer_data = {}
 
         # Get lawyer's name
-        lawyer_data['name'] = lawyer_box.find('h2', class_='media-heading').text.strip()
-
-        # Get lawyer's rating
-        rating = lawyer_box.find('span', class_='score').text.split('|')[0].strip()
-        lawyer_data['rating'] = rating
-
-        # Get number of user ratings
-        user_ratings = lawyer_box.find('span', class_='score').text.split('|')[1].strip()
-        lawyer_data['user_ratings'] = user_ratings
+        name_element = lawyer_box.find('h2', class_='media-heading')
+        if name_element:
+            lawyer_data['name'] = name_element.text.strip()
+        else:
+            lawyer_data['name'] = "Name Not Available"
+        name_element2 = lawyer_box.find('div', class_='small-info')
+        if name_element2:
+            lawyer_data['name'] = name_element2.find('a')['title']
+        # Get lawyer's rating and user ratings
+        rating_element = lawyer_box.find('span', class_='score')
+        if rating_element:
+            rating_text = rating_element.text.strip().split('|')
+            lawyer_data['rating'] = rating_text[0]
+            lawyer_data['user_ratings'] = rating_text[1]
+        else:
+            lawyer_data['rating'] = "Rating Not Available"
+            lawyer_data['user_ratings'] = "User Ratings Not Available"
 
         # Get location
-        location = lawyer_box.find('div', class_='location').text.strip()
-        lawyer_data['location'] = location
+        location_element = lawyer_box.find('div', class_='location')
+        if location_element:
+            lawyer_data['location'] = location_element.text.strip()
+        else:
+            lawyer_data['location'] = "Location Not Available"
 
         # Get experience
-        experience = lawyer_box.find('div', class_='experience').text.strip()
-        lawyer_data['experience'] = experience
+        experience_element = lawyer_box.find('div', class_='experience')
+        if experience_element:
+            lawyer_data['experience'] = experience_element.text.strip()
+        else:
+            lawyer_data['experience'] = "Experience Not Available"
 
         # Get practice area & skills
-        practice_area = lawyer_box.find('div', class_='area-skill').find('div').text.strip()
-        lawyer_data['practice_area'] = practice_area
+        practice_area_element = lawyer_box.find('div', class_='area-skill')
+        if practice_area_element:
+            lawyer_data['practice_area'] = practice_area_element.find('div').text.strip()
+            
+        else:
+            lawyer_data['practice_area'] = "Practice Area Not Available"
+
         # Get image link
-        image_link = lawyer_box.find('img')['src']
-        lawyer_data['image_link'] = image_link
-        contact_link = lawyer_box.find('div', class_='cta margin-small-top')
-        contact_link2 = contact_link.find('a')['href']
-        lawyer_data['contact_link'] = contact_link2
+        image_link_element = lawyer_box.find('img')
+        if image_link_element:
+            lawyer_data['image_link'] = image_link_element['src']
+        else:
+            lawyer_data['image_link'] = "Image Link Not Available"
+
+        # Get contact link
+        contact_link_element = lawyer_box.find('div', class_='cta margin-small-top')
+        if contact_link_element:
+            lawyer_data['contact_link'] = contact_link_element.find('a')['href']
+        else:
+            lawyer_data['contact_link'] = "Contact Link Not Available"
 
         lawyers.append(lawyer_data)
     return lawyers
+
 class GetLawyer(APIView):
     permission_classes = (AllowAny,)
 
