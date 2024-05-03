@@ -31,8 +31,7 @@ verification_key_path = settings.PUBLIC_KEY_PATH
 try:
     verification_key = open(settings.PUBLIC_KEY_PATH, 'r').read()
 except FileNotFoundError:
-    print(f"Error: Public key file not found at {settings.PUBLIC_KEY_PATH}")
-   
+    pass
 def generate_random_string(length):
     letters_and_digits = string.ascii_uppercase + string.digits
     return ''.join(random.choice(letters_and_digits) for _ in range(length))
@@ -48,7 +47,6 @@ def sendGmail(data,type,to_email,subject):
     from_email = 'datasculptorx@gmail.com'
     recipient_list = [to_email]
     master = send_mail(subject, message, from_email, recipient_list, html_message=message)
-    print(master)
     return "ok"
 
 def user_type(UserProfileData):
@@ -98,41 +96,38 @@ class ForgotPassword(APIView):
     def post(self, request, format=None):
         data = request.data
         email = data.get("email")
-
         # Check if the email already exists
-        if not UserProfile.objects.filter(email=email,voj_user=True).exists():
-            return Response({"error": "An account with this email not exists."}, status=400)
         if UserProfile.objects.filter(email=email,google_user=True).exists():
             return Response({"error": "An account with this email already exists in Google Login."}, status=400)
+        if not UserProfile.objects.filter(email=email,voj_user=True).exists():
+            return Response({"error": "An account with this email not exists."}, status=400)
+
+
         try:
             user = User.objects.get( email=email)
             otp=random.randint(10000, 99999)
-
             userProfile = UserProfile.objects.get(
                 username=user,
-           
             )
             userProfile.otp=otp
             UserProfile.exp_date=datetime.now() + timedelta(minutes=5, seconds=10)
+
             userProfile.save()
             key = b'OMtWIu8M2NodZzHVy9_AAaRwXyuCm7l0MbOiDZXQtyE='
             cipher_suite = Fernet(key)
             string_to_encrypt = email
             encrypted_string = cipher_suite.encrypt(string_to_encrypt.encode())
             encrypted_url_safe = urllib.parse.quote(encrypted_string)
-
             data={
                     "name":userProfile.name,
                     "otp":otp,
                     'encrypted_link':"http://localhost:3000/?sso={}".format(encrypted_url_safe)
-
                 }
-            sendGmail(data,'forgotPassword',data,"Reset Your Password: One-Time Passcode (OTP) Included")
+            sendGmail(data,'otp',email,"Reset Your Password: One-Time Passcode (OTP) Included")
 
             return Response({"message": "OTP Sended Successfully"}, status=201)
 
         except Exception as e:
-            user.delete()
             return Response({"error": str(e)}, status=500)
 
 class VerifyEmail(APIView):
@@ -146,7 +141,6 @@ class VerifyEmail(APIView):
         
         encrypted_string = urllib.parse.unquote(sso)
         decrypted_string = cipher_suite.decrypt(encrypted_string.encode()).decode()
-        print(decrypted_string)
         try:
             userProfile = UserProfile.objects.get(
                 email=decrypted_string,
@@ -156,7 +150,6 @@ class VerifyEmail(APIView):
             data={
                     "username":userProfile.name,
                 }
-            print(data)
             sendGmail(data,'signUp',decrypted_string,'Welcome to Voice of Justice')
 
             return Response({"message": "Account Verified Successfully"}, status=201)
@@ -297,13 +290,10 @@ class UserProfileView(APIView):
         try:
             data = jwt.decode(token, verification_key, algorithms=["RS256"])
         except UnicodeDecodeError as e:
-            print(f"UnicodeDecodeError: {e}")
-            print(f"Problematic token: {token}")
-            print(data)
+            pass
 
         userTrackData = UserTrack.objects.get(id=data["tk"])
         UserProfileData = UserProfile.objects.get(username=userTrackData.username)
-        print(userTrackData,UserProfileData)
         userType=user_type(UserProfileData)
         user = userTrackData.username
         success_data = {
