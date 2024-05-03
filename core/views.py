@@ -167,9 +167,8 @@ def scrape_lawyers(url):
         lawyer_data['experience'] = experience
 
         # Get practice area & skills
-        practice_area = lawyer_box.find('div', class_='area-skill').text.strip()
+        practice_area = lawyer_box.find('div', class_='area-skill').find('div').text.strip()
         lawyer_data['practice_area'] = practice_area
-
         # Get image link
         image_link = lawyer_box.find('img')['src']
         lawyer_data['image_link'] = image_link
@@ -186,12 +185,17 @@ class GetLawyer(APIView):
 
         case = request.data.get('case', '')
         place = request.data.get('place', None)
+        lang = request.data.get('lang', 'en')
         page = request.data.get('page', '2')
-        if place:
-            url_template = "https://lawrato.com/{case}/{place}?&page={page}".format(page=page,place=place,case=case)
-        else:
-            url_template = "https://lawrato.com/{case}?&page={page}".format(page=page,case=case)
+        print(case,place,page)
+        if lang=="en":
+            url_template = f"https://lawrato.com/{case}-lawyers{'/'+place if place else ''}?&page={page}"
+        elif lang=="ta":
+            url_template = f"https://tamil.lawrato.com/{case}-வழக்கறிஞர்கள்{'/'+place if place else ''}?&page={page}"
+        elif lang=="hi":
+            url_template = f"https://hindi.lawrato.com/{case}-वकील{'/'+place if place else ''}?&page={page}"
         lawyers_data = scrape_lawyers(url_template)
+        print(url_template)
         return Response(lawyers_data)
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -231,11 +235,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import nltk
 import re
 
 
-nltk.download('wordnet')
 
 def preprocess_text(text):
     if isinstance(text, str):
@@ -258,12 +260,19 @@ def combine_text(doc):
             combined_text += preprocess_text(str(value)) + ' '  # Convert non-string values to string
     return combined_text
 
+
 def expand_query_with_synonyms(query):
-    synonyms = set()
-    for syn in nltk.corpus.wordnet.synsets(query):
-        for lemma in syn.lemmas():
-            synonyms.add(preprocess_text(lemma.name()))
-    return ' '.join(synonyms)
+    url = f"https://api.datamuse.com/words?rel_syn={query}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        synonyms = set()
+        data = response.json()
+        for entry in data:
+            synonyms.add(preprocess_text(entry['word']))
+        return ' '.join(synonyms)
+    else:
+        return query
+
 
 class GetQueryLaw(APIView):
     permission_classes = (AllowAny,)
@@ -271,18 +280,13 @@ class GetQueryLaw(APIView):
     def post(self, request, *args, **kwargs):
         laws = Law.objects.all()
         data = [law.data for law in laws if law.data is not None]
-
-        # Combine text from all fields for each document
         documents = [combine_text(doc) for doc in data]
-        # Preprocess documents
         preprocessed_documents = [preprocess_text(doc) for doc in documents]
 
         vectorizer = TfidfVectorizer()
         documents_tfidf = vectorizer.fit_transform(preprocessed_documents)
 
         query = request.data.get('query', '')  # Assuming query is sent in the request data
-        expanded_query = expand_query_with_synonyms(query)
-        print(expanded_query)
         query_vector = vectorizer.transform([query])
         cosine_similarities = cosine_similarity(query_vector, documents_tfidf).flatten()
         
