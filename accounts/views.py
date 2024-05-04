@@ -110,8 +110,7 @@ class ForgotPassword(APIView):
                 username=user,
             )
             userProfile.otp=otp
-            UserProfile.exp_date=datetime.now() + timedelta(minutes=5, seconds=10)
-
+            userProfile.exp_date = datetime.now() + timedelta(minutes=5, seconds=10)
             userProfile.save()
             key = b'OMtWIu8M2NodZzHVy9_AAaRwXyuCm7l0MbOiDZXQtyE='
             cipher_suite = Fernet(key)
