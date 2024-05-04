@@ -121,7 +121,7 @@ class ForgotPassword(APIView):
             data={
                     "name":userProfile.name,
                     "otp":otp,
-                    'encrypted_link':"http://localhost:3000/verifyPassord?sso={}".format(encrypted_url_safe)
+                    'encrypted_link':"http://localhost:3000/verifyPassword?sso={}".format(encrypted_url_safe)
                 }
             sendGmail(data,'otp',email,"Reset Your Password: One-Time Passcode (OTP) Included")
 
