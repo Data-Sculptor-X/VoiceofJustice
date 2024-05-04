@@ -17,3 +17,4 @@ genai
 google-generativeai
 pillow
 beautifulsoup4
+scikit-learn
