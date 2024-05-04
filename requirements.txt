@@ -16,3 +16,4 @@ google-auth
 genai
 google-generativeai
 pillow
+beautifulsoup4
