@@ -9,8 +9,6 @@ cryptography
 pyjwt
 gunicorn
 requests
-genai
-google-generativeai
 pillow
 beautifulsoup4
 scikit-learn
