@@ -1,5 +1,5 @@
 boto3
-Django==3.2.14
+Django==3.2.25
 python-dotenv
 django-cors-headers==3.13.0
 djangorestframework==3.13.1
