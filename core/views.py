@@ -13,7 +13,8 @@ from rest_framework.response import Response
 from .models import *
 from accounts.models import *
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 verification_key_path = settings.PUBLIC_KEY_PATH
 try:
     verification_key = open(settings.PUBLIC_KEY_PATH, 'r').read()
