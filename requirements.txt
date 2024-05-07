@@ -13,3 +13,4 @@ pillow
 beautifulsoup4
 scikit-learn
 openai==1.23.6
+google-auth
