@@ -120,7 +120,7 @@ class ForgotPassword(APIView):
             data={
                     "name":userProfile.name,
                     "otp":otp,
-                    'encrypted_link':"http://localhost:3000/verifyPassword?sso={}".format(encrypted_url_safe)
+                    'encrypted_link':"https://www.voiceofjustice.me/verifyPassword?sso={}".format(encrypted_url_safe)
                 }
             sendGmail(data,'otp',email,"Reset Your Password: One-Time Passcode (OTP) Included")
 
@@ -196,7 +196,7 @@ class RegisterView(APIView):
             encrypted_url_safe = urllib.parse.quote(encrypted_string)
             data={
             "username":name,
-            'encrypted_link':"http://localhost:3000/verifyEmail?sso={}".format(encrypted_url_safe)
+            'encrypted_link':"https://www.voiceofjustice.me/verifyEmail?sso={}".format(encrypted_url_safe)
             }
             sendGmail(data,'verify',email,"Verify Your Account")
             return Response({"message": "Account created successfully."}, status=201)
