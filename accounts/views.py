@@ -306,3 +306,8 @@ class UserProfileView(APIView):
         }
         
         return Response(success_data)
+    
+
+class serverApi(APIView):
+    def get(self, request,format=None):
+        return Response("success")

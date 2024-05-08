@@ -9,4 +9,5 @@ urlpatterns = [
     path('ForgotPassword/', ForgotPassword.as_view(), name='ForgotPassword'),
     path('VerifyEmail/', VerifyEmail.as_view(), name='VerifyEmail'),
     path('VerifyForgotPassword/', VerifyForgotPassword.as_view(), name='VerifyForgotPassword'),
+    path('serverApi/', serverApi.as_view(), name='serverApi'),
 ]
